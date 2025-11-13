@@ -15,9 +15,9 @@ export const minikitConfig = {
   },
   miniapp: {
     version: "1",
-    name: "Cubey", 
-    subtitle: "Your AI Ad Companion", 
-    description: "Ads",
+      name: "La Monjeria", 
+      subtitle: "Your AI Monk Creator",
+      description: "Mint monks, create music",
     screenshotUrls: [`${ROOT_URL}/screenshot-portrait.png`],
     iconUrl: `${ROOT_URL}/blue-icon.png`,
     splashImageUrl: `${ROOT_URL}/blue-hero.png`,

@@ -1,51 +1,52 @@
-import { NextResponse } from "next/server"
-import { Alchemy, Network } from "alchemy-sdk"
-import { CONTRACTS } from "../../lib/contracts"
+import { createClient } from '@farcaster/quick-auth';
+import { NextRequest, NextResponse } from 'next/server';
 
-const alchemy = new Alchemy({
-  apiKey: process.env.ALCHEMY_KEY!,
-  network: Network.BASE_SEPOLIA // use BASE_MAINNET for prod
-})
+const quickAuthClient = createClient();
+const ORIGIN_CONTRACT = process.env.ORIGIN_CONTRACT!;
+const DOMAIN = process.env.APP_DOMAIN!;
 
-export async function POST(req: Request) {
+export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const token = authHeader.split(' ')[1];
+
   try {
-    const { address } = (await req.json()) as { address: string }
+    // Step 1: Verify JWT and extract FID
+    const payload = await quickAuthClient.verifyJwt({ token, domain: DOMAIN });
+    const fid = payload.sub;
 
-    if (!address) {
-      return NextResponse.json({ error: "Missing wallet address" }, { status: 400 })
+    // Step 2: Get wallets from Neynar
+    const neynarRes = await fetch(`https://api.neynar.com/v2/fid/${fid}`, {
+      headers: { 'api_key': process.env.NEYNAR_API_KEY! },
+    });
+
+    const { connected_addresses } = await neynarRes.json();
+    const addresses = connected_addresses.eth_addresses;
+
+    if (!addresses.length) {
+      return NextResponse.json({ tier: 'public' });
     }
 
-    const nfts = await alchemy.nft.getNftsForOwner(address)
+    // Step 3: Check each wallet with SimpleHash
+    const checks = await Promise.all(addresses.map(async (address: string) => {
+      const res = await fetch(
+        `https://api.simplehash.com/api/v0/nfts/owners/${address}?contract_address=${ORIGIN_CONTRACT}`,
+        {
+          headers: { 'X-API-KEY': process.env.SIMPLEHASH_KEY! },
+        }
+      );
+      const data = await res.json();
+      return data.nfts?.length > 0;
+    }));
 
-    const ownedContracts: string[] = nfts.ownedNfts.map(
-      (nft: { contract: { address: string } }) => nft.contract.address.toLowerCase()
-    )
+    const isHolder = checks.includes(true);
 
-    // 🆓 Monks or Mantle holders = 1 free, then 0.001 ETH mints
-    const isMonkHolder =
-      ownedContracts.includes(CONTRACTS.monks.toLowerCase()) ||
-      ownedContracts.includes(CONTRACTS.mantle.toLowerCase())
-
-    // 💸 Discounted (.001 ETH)
-    const isDiscountHolder = CONTRACTS.discountCollections.some(
-      (addr: string) => ownedContracts.includes(addr.toLowerCase())
-    )
-
-    // 🎶 Access to music page (requires minted NFT)
-    const hasMusicAccess = ownedContracts.includes(CONTRACTS.musicAccess.toLowerCase())
-
-    let price = 0.002 // default public mint
-    if (isMonkHolder) price = 0.001 // after free
-    else if (isDiscountHolder) price = 0.001
-
-    return NextResponse.json({
-      price,
-      access: hasMusicAccess,
-      isMonkHolder,
-      isDiscountHolder,
-    })
+    return NextResponse.json({ tier: isHolder ? 'originHolder' : 'public' });
   } catch (err) {
-    console.error("NFT check error:", err)
-    return NextResponse.json({ error: "Failed to check NFTs" }, { status: 500 })
+    console.error('NFT check error:', err);
+    return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
   }
 }

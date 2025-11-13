@@ -1,8 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+import React, { useState } from 'react'
 
 const styles = [
   'Electronic', 'Hip-Hop', 'Trap', 'Lo-fi', 'Jazz', 'Ambient',
@@ -16,10 +14,6 @@ const styles = [
 ]
 
 export default function MusicPage() {
-  const { address, isConnected } = useAccount()
-  const [access, setAccess] = useState<boolean | null>(null)
-  const [checking, setChecking] = useState(false)
-
   const [prompt, setPrompt] = useState('')
   const [lyrics, setLyrics] = useState('')
   const [style, setStyle] = useState(styles[0])
@@ -27,30 +21,6 @@ export default function MusicPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // 🧿 Check NFT access when wallet connects
-  useEffect(() => {
-    if (!address) return
-    const checkAccess = async () => {
-      try {
-        setChecking(true)
-        const res = await fetch('/api/check-nft', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address }),
-        })
-        const data = await res.json()
-        setAccess(data.access || false)
-      } catch (err) {
-        console.error('Access check failed:', err)
-        setAccess(false)
-      } finally {
-        setChecking(false)
-      }
-    }
-    checkAccess()
-  }, [address])
-
-  // 🎵 Generate Music
   const generateSong = async () => {
     setLoading(true)
     setError(null)
@@ -81,66 +51,14 @@ export default function MusicPage() {
     }
   }
 
-  // 🧱 Gating UI
-  if (!isConnected) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[70vh] text-center">
-        <h2 className="text-xl mb-4">🎧 Conecta tu wallet / Connect your wallet</h2>
-        <ConnectButton />
-      </div>
-    )
-  }
-
-  if (checking) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[70vh]">
-        <p className="text-lg text-gray-300">🔍 Checking NFT ownership...</p>
-      </div>
-    )
-  }
-
-  if (access === false) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[70vh] text-center space-y-4">
-        <h2 className="text-xl text-red-400 font-semibold">
-          🚫 No tienes acceso / You don’t hold the required Monk NFT
-        </h2>
-        <p className="text-gray-400">Mint one first to unlock the music creation experience.</p>
-        <a
-          href="/create"
-          className="mt-4 px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition"
-        >
-          🪷 Go Mint a Monk
-        </a>
-      </div>
-    )
-  }
-
-  // 🎶 Main Music Generator
   return (
     <div className="flex flex-col items-center justify-center p-6">
       <h1 className="text-3xl font-bold mb-4 text-amber-200">🎶 Crea tu Himno del Monje / Create Your Monk Anthem</h1>
 
       <div className="w-full max-w-2xl bg-black/80 p-6 rounded-lg text-amber-100 border border-amber-600 space-y-4">
-        <label className="block text-sm text-amber-300 text-left">Lore / Historia del Monje</label>
-        <textarea
-          className="w-full p-3 bg-gray-900 rounded"
-          rows={3}
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Describe la leyenda de tu monje / Describe your monk's story..."
-        />
 
-        <label className="block text-sm text-amber-300 text-left mt-2">Letra opcional / Optional lyrics</label>
-        <textarea
-          className="w-full p-3 bg-gray-900 rounded"
-          rows={2}
-          value={lyrics}
-          onChange={(e) => setLyrics(e.target.value)}
-          placeholder="Añade letra si quieres / Add lyrics if you'd like..."
-        />
-
-        <label className="block text-sm text-amber-300 text-left mt-2">Estilo Musical / Music Style</label>
+        {/* 🎼 Style First */}
+        <label className="block text-sm text-amber-300 text-left">Estilo Musical / Music Style</label>
         <select
           className="w-full p-3 bg-gray-900 rounded"
           value={style}
@@ -153,6 +71,27 @@ export default function MusicPage() {
           ))}
         </select>
 
+        {/* 📝 Prompt */}
+        <label className="block text-sm text-amber-300 text-left">Lore / Historia del Monje</label>
+        <textarea
+          className="w-full p-3 bg-gray-900 rounded"
+          rows={3}
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Describe la leyenda de tu monje / Describe your monk's story..."
+        />
+
+        {/* 🎤 Lyrics */}
+        <label className="block text-sm text-amber-300 text-left mt-2">Letra opcional / Optional lyrics</label>
+        <textarea
+          className="w-full p-3 bg-gray-900 rounded"
+          rows={2}
+          value={lyrics}
+          onChange={(e) => setLyrics(e.target.value)}
+          placeholder="Añade letra si quieres / Add lyrics if you'd like..."
+        />
+
+        {/* ▶️ Button */}
         <button
           onClick={generateSong}
           disabled={loading || !prompt}
