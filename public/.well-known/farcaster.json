@@ -18,16 +18,16 @@
       "subtitle": "Welcome to the tienda de Monjes",
       "description": "Create, customize, and soundtrack your own Monje on Base. An experiment from ORIGIN STØRIES",
       "screenshotUrls": [
-        "https://basemonks.vercel.app/screenshots/1.png",
-        "https://basemonks.vercel.app/screenshots/2.png"
+        "https://monjeria.vercel.app/screenshots/1.png",
+        "https://monjeria.vercel.app/screenshots/2.png"
       ],
       "primaryCategory": "art-creativity",
       "tags": ["nft", "art", "ai"],
-      "heroImageUrl": "https://basemonks.vercel.app/og.png",
+      "heroImageUrl": "https://monjeria.vercel.app/og.png",
       "tagline": "AI Animation & Music Studio",
       "ogTitle": "La Monjería",
       "ogDescription": "Create AI monks and mint them as NFTs on Base.",
-      "ogImageUrl": "https://basemonks.vercel.app/og.png",
+      "ogImageUrl": "https://monjeria.vercel.app/og.png",
       "noindex": true
     }
   }
