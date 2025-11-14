@@ -8,7 +8,7 @@ const DOMAIN = process.env.APP_DOMAIN!;
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY!;
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY!;
 
-const ALCHEMY_URL = `https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`; // or `base-mainnet` if live
+const ALCHEMY_URL = `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('Authorization');
