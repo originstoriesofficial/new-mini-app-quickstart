@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { sdk } from '@farcaster/miniapp-sdk';
 
@@ -8,6 +8,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    sdk.actions.ready(); // ✅ splash screen will hide only after app is mounted
+  }, []);
 
   const handleEntrar = async () => {
     setError('');
@@ -29,7 +33,6 @@ export default function Home() {
         return;
       }
 
-      // If owns NFT, show options
       router.push('/dashboard');
     } catch (err) {
       console.error(err);

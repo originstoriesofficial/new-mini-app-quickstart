@@ -24,6 +24,7 @@ export const minikitConfig = {
       "name": "La Monjeria",
       "iconUrl": "https://monjeria.vercel.app/icon.png",
       "homeUrl": "https://monjeria.vercel.app",
+      "heroImageUrl": "https://monjeria.vercel.app/hero.png",
       "imageUrl": "https://monjeria.vercel.app/image.png",
       "splashImageUrl": "https://monjeria.vercel.app/splash.png",
       "splashBackgroundColor": "#ce19e6",
