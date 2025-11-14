@@ -16,24 +16,26 @@ export default function Home() {
   const handleEntrar = async () => {
     setError('');
     setLoading(true);
-  
+
     try {
       const { token } = await sdk.quickAuth.getToken();
-  
-      // ✅ SKIP the NFT ownership check temporarily
-      // const response = await sdk.quickAuth.fetch('/api/check-nft', {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
-  
-      // const { ownsNFT } = await response.json();
-  
-      // if (!ownsNFT) {
-      //   setError("❌ Sorry you don’t own any OriginStory. Grab some ⚡️ and try again.");
-      //   return;
-      // }
-  
+
+      // ✅ NFT ownership check — temporarily disabled
+      /*
+      const response = await sdk.quickAuth.fetch('/api/check-nft', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const { ownsNFT } = await response.json();
+
+      if (!ownsNFT) {
+        setError("❌ Sorry you don’t own any OriginStory. Grab some ⚡️ and try again.");
+        return;
+      }
+      */
+
       router.push('/dashboard');
     } catch (err) {
       console.error(err);
@@ -42,7 +44,6 @@ export default function Home() {
       setLoading(false);
     }
   };
-  
 
   return (
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center space-y-6 p-6">
