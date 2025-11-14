@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   const prompt = `An editorial photograph of an animated medieval ${animalType}, wearing an elaborate ${capeColor} inspired cape, holding an instantly recognizable, stereotypical ${attribute} in their hands, glossy, symmetrical, 4k, award-winning, crisp, detailed`
 
   try {
-    const result = await fal.subscribe("fal-ai/stable-cascade", {
+    const result = await fal.run("fal-ai/stable-cascade", {
       input: {
         prompt,
         image_size: "square_hd",

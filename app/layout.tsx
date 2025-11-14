@@ -1,3 +1,4 @@
+'use client';
 
 import type { Metadata } from "next";
 import { Inter, Source_Code_Pro } from "next/font/google";
