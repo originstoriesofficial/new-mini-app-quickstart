@@ -1,60 +1,72 @@
-"use client";
+// app/success/page.tsx
+import type { Metadata } from "next";
+import Image from "next/image";
 
-import { useComposeCast } from '@coinbase/onchainkit/minikit';
-import { minikitConfig } from "../../minikit.config";
-import styles from "./page.module.css";
+export const dynamic = "force-static";
 
-export default function Success() {
-
-  const { composeCastAsync } = useComposeCast();
-  
-  const handleShare = async () => {
-    try {
-      const text = `Yay! I just joined the waitlist for ${minikitConfig.miniapp.name.toUpperCase()}! `;
-      
-      const result = await composeCastAsync({
-        text: text,
-        embeds: [process.env.NEXT_PUBLIC_URL || ""]
-      });
-
-      // result.cast can be null if user cancels
-      if (result?.cast) {
-        console.log("Cast created successfully:", result.cast.hash);
-      } else {
-        console.log("User cancelled the cast");
-      }
-    } catch (error) {
-      console.error("Error sharing cast:", error);
-    }
+// ✅ dynamically build Open Graph / Farcaster embed
+export async function generateMetadata(): Promise<Metadata> {
+  const imageUrl = "https://basemonks.vercel.app/og.png"; // fallback
+  return {
+    title: "Monk Minted!",
+    description: "Your Monk is now live on Base 🧘‍♂️",
+    other: {
+      "fc:miniapp": JSON.stringify({
+        version: "next",
+        imageUrl,
+        button: {
+          title: "View My Monk",
+          action: {
+            type: "launch_frame",
+            url: "https://basemonks.vercel.app/create",
+            name: "Basemonks",
+            splashImageUrl: "https://basemonks.vercel.app/icon.png",
+            splashBackgroundColor: "#000000",
+          },
+        },
+      }),
+    },
+    openGraph: {
+      title: "Basemonks — Mint Complete",
+      description: "Your monk has been minted successfully.",
+      images: [imageUrl],
+    },
   };
+}
 
+export default function SuccessPage() {
   return (
-    <div className={styles.container}>
-      <button className={styles.closeButton} type="button">
-        ✕
-      </button>
-      
-      <div className={styles.content}>
-        <div className={styles.successMessage}>
-          <div className={styles.checkmark}>
-            <div className={styles.checkmarkCircle}>
-              <div className={styles.checkmarkStem}></div>
-              <div className={styles.checkmarkKick}></div>
-            </div>
-          </div>
-          
-          <h1 className={styles.title}>Welcome to the {minikitConfig.miniapp.name.toUpperCase()}!</h1>
-          
-          <p className={styles.subtitle}>
-            You&apos;re in! We&apos;ll notify you as soon as we launch.<br />
-            Get ready to experience the future of onchain marketing.
-          </p>
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
+      <h1 className="text-4xl font-bold mb-4 text-amber-400">
+        🧘‍♂️ Mint Successful!
+      </h1>
+      <p className="text-gray-400 mb-6 text-center">
+        Your monk is live on Base. Share it with your friends below.
+      </p>
 
-          <button onClick={handleShare} className={styles.shareButton}>
-            SHARE
-          </button>
-        </div>
-      </div>
+      <Image
+        src="/og.png"
+        alt="Minted Monk"
+        width={400}
+        height={400}
+        className="rounded-xl shadow-lg border border-amber-600"
+      />
+
+      <a
+        href="https://warpcast.com/~/compose?text=Just%20minted%20my%20Monk%20on%20Base%20🧘‍♂️%20%23Basemonks&embeds[]=https%3A%2F%2Fbasemonks.vercel.app%2Fsuccess"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-6 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition"
+      >
+        🔗 Share on Farcaster
+      </a>
+
+      <a
+        href="/create"
+        className="mt-4 text-sm text-gray-400 underline hover:text-gray-200"
+      >
+        Create another monk →
+      </a>
     </div>
   );
 }

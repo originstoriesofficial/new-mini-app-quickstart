@@ -17,5 +17,7 @@ export const CONTRACTS = {
   
     mintContract:"0x3D1E34Aa63d26f7b1307b96a612a40e5F8297AC7", 
     musicAccess: "0x3D1E34Aa63d26f7b1307b96a612a40e5F8297AC7", 
+    receiverWallet: "0xf911471907954f3cd546a5bb4c4580bc8dddc04c",
+
   }
   

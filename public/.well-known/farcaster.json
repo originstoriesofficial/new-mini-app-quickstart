@@ -1,0 +1,34 @@
+{
+    "accountAssociation": {
+      "header": "",
+      "payload": "",
+      "signature": ""
+    },
+    "baseBuilder": {
+      "ownerAddress": "0xYourBaseWalletAddress"
+    },
+    "miniapp": {
+      "version": "1",
+      "name": "Basemonks",
+      "homeUrl": "https://basemonks.vercel.app",
+      "iconUrl": "https://basemonks.vercel.app/icon.png",
+      "splashImageUrl": "https://basemonks.vercel.app/splash.png",
+      "splashBackgroundColor": "#000000",
+      "webhookUrl": "https://basemonks.vercel.app/api/webhook",
+      "subtitle": "Mint your monk on Base",
+      "description": "Create, customize, and mint your AI-generated monks directly on Base.",
+      "screenshotUrls": [
+        "https://basemonks.vercel.app/screenshots/1.png",
+        "https://basemonks.vercel.app/screenshots/2.png"
+      ],
+      "primaryCategory": "art-creativity",
+      "tags": ["nft", "art", "ai"],
+      "heroImageUrl": "https://basemonks.vercel.app/og.png",
+      "tagline": "Mint your wisdom onchain",
+      "ogTitle": "Basemonks Mini App",
+      "ogDescription": "Create AI monks and mint them as NFTs on Base.",
+      "ogImageUrl": "https://basemonks.vercel.app/og.png",
+      "noindex": true
+    }
+  }
+  
