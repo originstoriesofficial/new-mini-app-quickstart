@@ -1,16 +1,37 @@
-import pinataSDK from '@pinata/sdk'
+// lib/ipfs.ts
+import { PinataSDK } from 'pinata';
 
-const pinata = new pinataSDK({
-  pinataApiKey: process.env.PINATA_API_KEY!,
-  pinataSecretApiKey: process.env.PINATA_SECRET_API_KEY!,
-})
+const pinata = new PinataSDK({
+  pinataJwt: process.env.PINATA_JWT!,
+  pinataGateway: process.env.PINATA_GATEWAY!, // e.g. "yourgateway.mypinata.cloud"
+});
 
-export async function uploadToIPFS(fileUrl: string, type: string) {
-  const metadata = { name: `LaMonjeria-${type}-${Date.now()}` }
-  const res = await fetch(fileUrl)
-  const blob = await res.blob()
+// Upload a file to IPFS
+export async function uploadToIPFS(file: File) {
+  try {
+    const result = await pinata.upload.public.file(file);
+    return {
+      cid: result.cid,
+      url: `https://${process.env.PINATA_GATEWAY!}/ipfs/${result.cid}`,
+    };
+  } catch (err) {
+    console.error('IPFS Upload Error:', err);
+    throw err;
+  }
+}
 
-  const file = new File([blob], metadata.name)
-  const pinned = await pinata.pinFileToIPFS(file as any, { pinataMetadata: metadata })
-  return { ipfsHash: pinned.IpfsHash, url: `https://gateway.pinata.cloud/ipfs/${pinned.IpfsHash}` }
+// Get content by CID
+export async function getIPFSData(cid: string) {
+  try {
+    const data = await pinata.gateways.public.get(cid);
+    return data;
+  } catch (err) {
+    console.error('IPFS Fetch Error:', err);
+    throw err;
+  }
+}
+
+// Generate gateway URL from CID
+export function getIPFSUrl(cid: string) {
+  return `https://${process.env.PINATA_GATEWAY!}/ipfs/${cid}`;
 }
