@@ -18,19 +18,25 @@ const client = createClient();
 export async function POST(req: NextRequest) {
   try {
     const auth = req.headers.get("authorization");
-    if (!auth?.startsWith("Bearer "))
+    if (!auth?.startsWith("Bearer ")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const token = auth.split(" ")[1];
     const payload = await client.verifyJwt({ token, domain });
     const fid = payload.sub;
 
-    // Parse body
-    const { image, animal, cape, hand, tokenURI } = await req.json();
+    // Parse body (keep metadata fields for future use)
+    const {
+      tokenURI,
+      image: _image,
+      animal: _animal,
+      cape: _cape,
+      hand: _hand,
+    } = await req.json();
 
     /**
      * 1️⃣ Require payment if user hasn't paid
-     * The client SDK or agent will handle x402 and retry automatically after payment
      */
     const hasPaid = req.headers.get("x402-payment-proof");
     if (!hasPaid) {
@@ -41,7 +47,7 @@ export async function POST(req: NextRequest) {
             facilitator_url: "https://api.developer.coinbase.com/x402/base-sepolia",
             amount: "0.5",
             asset: "USDC",
-            to: CONTRACTS.receiverWallet, // your app wallet or payout receiver
+            to: CONTRACTS.receiverWallet,
             memo: `mint:${fid}`,
           },
         }),
@@ -50,12 +56,11 @@ export async function POST(req: NextRequest) {
     }
 
     /**
-     * 2️⃣ Verify payment with facilitator
-     * (In production, verify proof server-side)
+     * 2️⃣ (Optional) Validate payment server-side (skipped here)
      */
 
     /**
-     * 3️⃣ Encode mint call (user will sign via Paymaster, not backend)
+     * 3️⃣ Encode mint call (user signs it client-side)
      */
     const data = encodeFunctionData({
       abi: MintContractABI,
@@ -70,7 +75,7 @@ export async function POST(req: NextRequest) {
         to: CONTRACTS.mintContract,
         data,
         value: "0",
-        isSponsored: true, // handled by Paymaster
+        isSponsored: true,
       },
       message: "Payment verified. Ready to mint.",
     });

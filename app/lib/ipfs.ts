@@ -1,37 +1,49 @@
-// lib/ipfs.ts
 import { PinataSDK } from 'pinata';
 
 const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT!,
-  pinataGateway: process.env.PINATA_GATEWAY!, // e.g. "yourgateway.mypinata.cloud"
+  pinataGateway: process.env.PINATA_GATEWAY!,
 });
 
-// Upload a file to IPFS
-export async function uploadToIPFS(file: File) {
+// Upload file (e.g., image) to IPFS
+export async function uploadToIPFS(file: File, attributes?: Record<string, any>) {
   try {
-    const result = await pinata.upload.public.file(file);
+    const imageUpload = await pinata.upload.public.file(file);
+    const imageUrl = `https://${process.env.PINATA_GATEWAY!}/ipfs/${imageUpload.cid}`;
+
+    // If attributes are passed, upload metadata
+    if (attributes) {
+      const metadata = {
+        name: attributes.name || 'Originstory Token',
+        description: 'Minted with Originstory App',
+        image: imageUrl,
+        attributes: [
+          { trait_type: 'Animal', value: attributes.animal },
+          { trait_type: 'Cape', value: attributes.cape },
+          { trait_type: 'Hand', value: attributes.hand },
+        ],
+      };
+
+      const metadataFile = new File(
+        [JSON.stringify(metadata)],
+        'metadata.json',
+        { type: 'application/json' }
+      );
+
+      const metadataUpload = await pinata.upload.public.file(metadataFile);
+      return {
+        cid: metadataUpload.cid,
+        tokenURI: `https://${process.env.PINATA_GATEWAY!}/ipfs/${metadataUpload.cid}`,
+        metadata,
+      };
+    }
+
     return {
-      cid: result.cid,
-      url: `https://${process.env.PINATA_GATEWAY!}/ipfs/${result.cid}`,
+      cid: imageUpload.cid,
+      url: imageUrl,
     };
   } catch (err) {
     console.error('IPFS Upload Error:', err);
     throw err;
   }
-}
-
-// Get content by CID
-export async function getIPFSData(cid: string) {
-  try {
-    const data = await pinata.gateways.public.get(cid);
-    return data;
-  } catch (err) {
-    console.error('IPFS Fetch Error:', err);
-    throw err;
-  }
-}
-
-// Generate gateway URL from CID
-export function getIPFSUrl(cid: string) {
-  return `https://${process.env.PINATA_GATEWAY!}/ipfs/${cid}`;
 }
