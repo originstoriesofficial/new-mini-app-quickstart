@@ -3,29 +3,29 @@
       "header": "eyJmaWQiOjEzMzE0LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4RDY5OWM4MkVDRGQxN0E2RTk3RDcyNjRkMDM0MjlFRjVjNzM4RTJiMCJ9",
       "payload": "eyJkb21haW4iOiJtb25qZXJpYS05anRxLnZlcmNlbC5hcHAifQ",
       "signature": "V9u8PUqwoxBZu3F1Fevw97GKBUe9hcXeP+SRIZ1zL6B006mkYnmLyjgfk9cwhgbJxdoy12zFXXz8gHHpKqZmjRs="
-    },
-    "baseBuilder": {
-      "ownerAddress": "0x1ffcD029CE51fFf63C2Cc32445779CDE27C0C40f"
-    },
-    "miniapp": {
-      "version": "1",
-      "name": "La Monjeria",
-      "subtitle": "Your AI Monk Creator",
-      "description": "Mint monks, create music",
-      "screenshotUrls": [
-        "https://monjeria-9jtq.vercel.app/screenshot-portrait.png"
-      ],
-      "iconUrl": "https://monjeria-9jtq.vercel.app/blue-icon.png",
-      "splashImageUrl": "https://monjeria-9jtq.vercel.app/blue-hero.png",
-      "splashBackgroundColor": "#000000",
-      "homeUrl": "https://monjeria-9jtq.vercel.app",
-      "webhookUrl": "https://monjeria-9jtq.vercel.app/api/webhook",
-      "primaryCategory": "social",
-      "tags": ["marketing", "ads", "quickstart", "waitlist"],
-      "heroImageUrl": "https://monjeria-9jtq.vercel.app/blue-hero.png",
-      "ogImageUrl": "https://monjeria-9jtq.vercel.app/blue-hero.png",
-      "ogTitle": "La Monjería",
-      "ogDescription": "Mint monks, make music. Powered by AI and Farcaster."
-    }
-  }
-  
+    },   
+        "baseBuilder": {
+          "ownerAddress": "0x1ffcD029CE51fFf63C2Cc32445779CDE27C0C40f"
+        },
+        "miniapp": {
+          "version": "1",
+          "name": "La Monjeria",
+          "subtitle": "Your AI Monk Creator",
+          "description": "Mint monks, create music",
+          "screenshotUrls": [
+            "https://monjeria.vercel.app/screenshot-portrait.png"
+          ],
+          "iconUrl": "https://monjeria.vercel.app/blue-icon.png",
+          "splashImageUrl": "https://monjeria.vercel.app/blue-hero.png",
+          "splashBackgroundColor": "#000000",
+          "homeUrl": "https://monjeria.vercel.app",
+          "webhookUrl": "https://monjeria.vercel.app/api/webhook",
+          "primaryCategory": "social",
+          "tags": ["marketing", "ads", "quickstart", "waitlist"],
+          "heroImageUrl": "https://monjeria.vercel.app/blue-hero.png",
+          "ogImageUrl": "https://monjeria.vercel.app/blue-hero.png",
+          "ogTitle": "La Monjería",
+          "ogDescription": "Mint monks, make music. Powered by AI and Farcaster."
+        }
+      }
+      
