@@ -10,17 +10,21 @@
   "miniapp": {
     "version": "1",
     "name": "La Monjeria",
-    "iconUrl": "https://monjeria-9jtq.vercel.app/icon.png",
+    "subtitle": "Your AI Monk Creator",
+    "description": "Mint monks, create music",
+    "screenshotUrls": [
+      "https://monjeria-9jtq.vercel.app/screenshot-portrait.png"
+    ],
+    "iconUrl": "https://monjeria-9jtq.vercel.app/blue-icon.png",
+    "splashImageUrl": "https://monjeria-9jtq.vercel.app/blue-hero.png",
+    "splashBackgroundColor": "#000000",
     "homeUrl": "https://monjeria-9jtq.vercel.app",
-    "imageUrl": "https://monjeria-9jtq.vercel.app/image.png",
-    "splashImageUrl": "https://monjeria-9jtq.vercel.app/splash.png",
-    "splashBackgroundColor": "#ce19e6",
     "webhookUrl": "https://monjeria-9jtq.vercel.app/api/webhook",
-    "subtitle": "AI Animation and Music Studio",
-    "description": "Create and mint your own Monje and craft a unique music anthem",
-    "primaryCategory": "entertainment",
-    "tags": ["music", "art", "nft", "ai", "creativity"],
-    "ogTitle": "La Monjería - AI Studio",
-    "ogDescription": "Create, customize, and soundtrack your own Monje on Base"
+    "primaryCategory": "social",
+    "tags": ["marketing", "ads", "quickstart", "waitlist"],
+    "heroImageUrl": "https://monjeria-9jtq.vercel.app/blue-hero.png",
+    "ogImageUrl": "https://monjeria-9jtq.vercel.app/blue-hero.png",
+    "ogTitle": "La Monjería",
+    "ogDescription": "Mint monks, make music. Powered by AI and Farcaster."
   }
 }
