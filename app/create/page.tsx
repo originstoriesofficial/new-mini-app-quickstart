@@ -1,18 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { parseEther } from 'viem';
 import { writeContract, getAccount } from '@wagmi/core';
 import { wagmiConfig } from '../lib/wagmi';
 import ComposeCastButton from '../components/ComposeCastButton';
 import { MONKERIA_ABI } from '../lib/abi/monkeria';
-import { useSearchParams } from 'next/navigation'
 import Image from 'next/image';
 
-const searchParams = useSearchParams();
-const fid = searchParams.get('fid');
-
+// ✅ Deployed contract address
 const MONKERIA_ADDRESS = '0x3D1E34Aa63d26f7b1307b96a612a40e5F8297AC7';
 
 export default function CreatePage() {
@@ -32,6 +29,7 @@ export default function CreatePage() {
 
     try {
       setLoading(true);
+
       const res = await axios.post('/api/generate-image', {
         animalType: animal,
         capeColor: cape,
@@ -39,10 +37,13 @@ export default function CreatePage() {
       });
 
       const imageUrl = res.data?.imageUrl;
-      if (!imageUrl) throw new Error('No image URL returned from generation API');
+
+      if (!imageUrl) {
+        throw new Error('No image URL returned from generation API');
+      }
 
       setImage(imageUrl);
-      setTries((t) => t + 1);
+      setTries((prev) => prev + 1);
     } catch (err) {
       console.error('Error generating monk:', err);
       alert('❌ Error generating image. Please try again.');
@@ -55,6 +56,7 @@ export default function CreatePage() {
     if (!image) return;
 
     setMinting(true);
+
     try {
       const { address } = getAccount(wagmiConfig);
 
@@ -69,7 +71,7 @@ export default function CreatePage() {
         functionName: 'mint',
         account: address,
         value: parseEther('0'),
-        args: [image, 1],
+        args: [image, 1], // assuming (string memory _uri, uint256 amount)
       });
 
       alert('✅ Mint successful!');
