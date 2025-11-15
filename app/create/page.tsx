@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { parseEther } from 'viem';
-import { writeContract, getAccount } from '@wagmi/core';
-import { wagmiConfig } from '../lib/wagmi';
+import { useAccount } from 'wagmi';
+import { writeContract } from 'wagmi/actions';
 import ComposeCastButton from '../components/ComposeCastButton';
 import { MONKERIA_ABI } from '../lib/abi/monkeria';
 import Image from 'next/image';
@@ -13,6 +13,8 @@ import Image from 'next/image';
 const MONKERIA_ADDRESS = '0x3D1E34Aa63d26f7b1307b96a612a40e5F8297AC7';
 
 export default function CreatePage() {
+  const { address, isConnected } = useAccount(); // ✅ Hook at top level
+
   const [animal, setAnimal] = useState('');
   const [cape, setCape] = useState('');
   const [hand, setHand] = useState('');
@@ -55,17 +57,15 @@ export default function CreatePage() {
   const handleMint = async () => {
     if (!image) return;
 
+    if (!isConnected || !address) {
+      alert('Wallet not connected.');
+      return;
+    }
+
     setMinting(true);
 
     try {
-      const { address } = getAccount(wagmiConfig);
-
-      if (!address) {
-        alert('Wallet not connected.');
-        return;
-      }
-
-      await writeContract(wagmiConfig, {
+      await writeContract({
         address: MONKERIA_ADDRESS,
         abi: MONKERIA_ABI,
         functionName: 'mint',

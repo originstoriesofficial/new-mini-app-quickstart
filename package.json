@@ -19,8 +19,8 @@
     "pinata": "^2.5.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "viem": "^2.39.0",
-    "wagmi": "^2.19.4"
+    "viem": "^1.21.4",
+    "wagmi": "^1.4.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",
