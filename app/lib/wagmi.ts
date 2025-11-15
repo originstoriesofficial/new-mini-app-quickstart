@@ -1,5 +1,3 @@
-// app/lib/wagmi.ts
-
 import { createConfig, http } from 'wagmi'
 import { base } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
@@ -8,6 +6,6 @@ export const wagmiConfig = createConfig({
   chains: [base],
   connectors: [injected()],
   transports: {
-    [base.id]: http(process.env.NEXT_PUBLIC_RPC_URL!),
+    [base.id]: http(process.env.NEXT_PUBLIC_RPC_URL!), // set this in .env
   },
 })
