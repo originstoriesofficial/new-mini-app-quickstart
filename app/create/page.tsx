@@ -4,7 +4,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { parseEther } from 'viem'
 import { useAccount } from 'wagmi'
-import { writeContract } from '@wagmi/core'
+import { useWriteContract } from 'wagmi'
 import { wagmiConfig } from '../lib/wagmi'
 import ComposeCastButton from '../components/ComposeCastButton'
 import { MONKERIA_ABI } from '../lib/abi/monkeria'
@@ -50,16 +50,18 @@ export default function CreatePage() {
     }
   }
 
+  const { writeContractAsync } = useWriteContract()
+
   const handleMint = async () => {
     if (!image || !isConnected || !address) {
       alert('Wallet not connected or image missing.')
       return
     }
-
+  
     setMinting(true)
-
+  
     try {
-      await writeContract(wagmiConfig, {
+      await writeContractAsync({
         address: MONKERIA_ADDRESS,
         abi: MONKERIA_ABI,
         functionName: 'mint',
@@ -67,7 +69,7 @@ export default function CreatePage() {
         value: parseEther('0'),
         args: [image, 1],
       })
-
+  
       alert('✅ Mint successful!')
     } catch (err) {
       console.error('Mint error:', err)
