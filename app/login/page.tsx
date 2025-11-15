@@ -8,7 +8,6 @@ export default function LoginPage() {
   const [fid, setFid] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
   const router = useRouter()
 
   const signIn = async () => {
@@ -16,23 +15,26 @@ export default function LoginPage() {
     setError(null)
 
     try {
+      // ✅ Request QuickAuth token
       const { token } = await sdk.quickAuth.getToken()
 
+      // ✅ Store token for NFT gate access
+      localStorage.setItem('quickAuthToken', token)
+
+      // ✅ Verify token with backend
       const res = await sdk.quickAuth.fetch('/api/auth', {
         headers: { Authorization: `Bearer ${token}` },
       })
 
-      if (!res.ok) {
-        throw new Error('Failed to verify token with backend')
-      }
+      if (!res.ok) throw new Error('Failed to verify token with backend')
 
       const data = await res.json()
       setFid(data.fid)
 
-      // Optional: redirect after auth
+      // ✅ Redirect after successful auth
       setTimeout(() => {
         router.push('/create')
-      }, 1000)
+      }, 800)
     } catch (err) {
       console.error('Auth failed:', err)
       setError('❌ Authentication failed. Please try again.')
@@ -53,10 +55,10 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full py-3 bg-amber-600 hover:bg-amber-700 rounded-lg text-lg font-bold disabled:opacity-50"
             >
-              {loading ? 'Authenticating...' : 'Authenticate with Farcaster'}
+              {loading ? 'Authenticating…' : 'Entrar con Farcaster'}
             </button>
 
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           </>
         ) : (
           <>

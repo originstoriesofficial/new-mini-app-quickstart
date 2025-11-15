@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import { Inter, Source_Code_Pro } from 'next/font/google';
-import './globals.css';
-import ClientProviders from './ClientProviders';
+import type { Metadata } from 'next'
+import { Inter, Source_Code_Pro } from 'next/font/google'
+import './globals.css'
+import { Providers } from './providers' // ✅ use the wagmi/query provider
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const sourceCodePro = Source_Code_Pro({ subsets: ['latin'], variable: '--font-source-code-pro' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const sourceCodePro = Source_Code_Pro({ subsets: ['latin'], variable: '--font-source-code-pro' })
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -24,15 +24,16 @@ export async function generateMetadata(): Promise<Metadata> {
         },
       }),
     },
-  };
+  }
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={`${inter.variable} ${sourceCodePro.variable} bg-black text-white`}>
-        <ClientProviders>{children}</ClientProviders>
+        {/* ✅ Wagmi + React Query providers wrap the app here */}
+        <Providers>{children}</Providers>
       </body>
     </html>
-  );
+  )
 }

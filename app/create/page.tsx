@@ -1,7 +1,6 @@
 'use client'
-export const dynamic = 'force-dynamic'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import axios from 'axios'
 import { parseEther } from 'viem'
 import { useAccount, useWriteContract } from 'wagmi'
@@ -12,7 +11,6 @@ import Image from 'next/image'
 const MONKERIA_ADDRESS = '0x3D1E34Aa63d26f7b1307b96a612a40e5F8297AC7'
 
 export default function CreatePage() {
-  const [isClient, setIsClient] = useState(false)
   const { address, isConnected } = useAccount()
   const { writeContractAsync } = useWriteContract()
 
@@ -23,12 +21,6 @@ export default function CreatePage() {
   const [loading, setLoading] = useState(false)
   const [minting, setMinting] = useState(false)
   const [tries, setTries] = useState(0)
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  if (!isClient) return null
 
   const handleGenerate = async () => {
     if (tries >= 3) {
@@ -48,7 +40,7 @@ export default function CreatePage() {
       if (!imageUrl) throw new Error('No image URL returned')
 
       setImage(imageUrl)
-      setTries((prev) => prev + 1)
+      setTries(prev => prev + 1)
     } catch (err) {
       console.error('Generation error:', err)
       alert('❌ Error generating image. Try again.')
@@ -64,7 +56,6 @@ export default function CreatePage() {
     }
 
     setMinting(true)
-
     try {
       await writeContractAsync({
         address: MONKERIA_ADDRESS,
@@ -74,7 +65,6 @@ export default function CreatePage() {
         value: parseEther('0'),
         args: [image, 1],
       })
-
       alert('✅ Mint successful!')
     } catch (err) {
       console.error('Mint error:', err)
@@ -147,7 +137,7 @@ function Input({
         className="w-full bg-zinc-800 text-white p-4 rounded-lg border border-zinc-700 placeholder-zinc-400"
         placeholder={placeholder}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={e => setValue(e.target.value)}
       />
     </div>
   )
