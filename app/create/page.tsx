@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { parseEther } from 'viem'
-import { useAccount } from 'wagmi'
-import { useWriteContract } from 'wagmi'
+import { useAccount, useWriteContract } from 'wagmi'
 import ComposeCastButton from '../components/ComposeCastButton'
 import { MONKERIA_ABI } from '../lib/abi/monkeria'
 import Image from 'next/image'
@@ -12,7 +11,9 @@ import Image from 'next/image'
 const MONKERIA_ADDRESS = '0x3D1E34Aa63d26f7b1307b96a612a40e5F8297AC7'
 
 export default function CreatePage() {
+  const [isClient, setIsClient] = useState(false)
   const { address, isConnected } = useAccount()
+  const { writeContractAsync } = useWriteContract()
 
   const [animal, setAnimal] = useState('')
   const [cape, setCape] = useState('')
@@ -21,6 +22,12 @@ export default function CreatePage() {
   const [loading, setLoading] = useState(false)
   const [minting, setMinting] = useState(false)
   const [tries, setTries] = useState(0)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  if (!isClient) return null
 
   const handleGenerate = async () => {
     if (tries >= 3) {
@@ -49,16 +56,14 @@ export default function CreatePage() {
     }
   }
 
-  const { writeContractAsync } = useWriteContract()
-
   const handleMint = async () => {
     if (!image || !isConnected || !address) {
       alert('Wallet not connected or image missing.')
       return
     }
-  
+
     setMinting(true)
-  
+
     try {
       await writeContractAsync({
         address: MONKERIA_ADDRESS,
@@ -68,7 +73,7 @@ export default function CreatePage() {
         value: parseEther('0'),
         args: [image, 1],
       })
-  
+
       alert('✅ Mint successful!')
     } catch (err) {
       console.error('Mint error:', err)
