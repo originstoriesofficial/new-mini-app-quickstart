@@ -1,4 +1,3 @@
-// ✅ Make sure this file ONLY contains this single export
 export async function getFarcasterUser(address: string) {
     if (!address) throw new Error('Missing address')
   
@@ -18,6 +17,6 @@ export async function getFarcasterUser(address: string) {
     }
   
     const data = await res.json()
-    return data?.[address]?.[0] // user object for that wallet
+    return data?.[address]?.[0]
   }
   

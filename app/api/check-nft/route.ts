@@ -16,15 +16,18 @@ const publicClient = createPublicClient({
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('Authorization')
-  if (!authHeader?.startsWith('Bearer '))
+  if (!authHeader?.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
   const token = authHeader.split(' ')[1]
 
   try {
+    // ✅ 1. Verify Farcaster QuickAuth JWT
     const payload = await quickAuthClient.verifyJwt({ token, domain: DOMAIN })
     const fid = Number(payload.sub)
 
+    // ✅ 2. Get custody address from Neynar via FID
     const userRes = await fetch(
       `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
       {
@@ -41,8 +44,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Custody address not found' }, { status: 400 })
     }
 
-    const user = await getFarcasterUser(address) // ✅ now cleanly imported
+    // ✅ 3. Lookup Farcaster user by custody address
+    const user = await getFarcasterUser(address)
 
+    // ✅ 4. Verify NFT ownership on Origin contract
     const balance = await publicClient.readContract({
       address: ORIGIN_CONTRACT,
       abi: parseAbi(['function balanceOf(address) view returns (uint256)']),
@@ -52,6 +57,7 @@ export async function GET(req: NextRequest) {
 
     const ownsNFT = BigInt(balance) > 0n
 
+    // ✅ 5. Return verified result
     return NextResponse.json({
       verified: ownsNFT,
       fid,
