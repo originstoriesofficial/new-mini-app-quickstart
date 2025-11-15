@@ -1,15 +1,22 @@
 import { createClient } from '@farcaster/quick-auth';
 import { NextRequest, NextResponse } from 'next/server';
+import { base } from 'viem/chains';
+import { createPublicClient, http, parseAbi } from 'viem';
 
 const quickAuthClient = createClient();
+
 const DOMAIN = process.env.APP_DOMAIN!;
-// const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY!;
-// const ORIGIN_CONTRACT = process.env.ORIGIN_CONTRACT!;
-// const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY!;
-// const ALCHEMY_URL = `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
+const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY!;
+const ORIGIN_CONTRACT = '0x45737f6950f5c9e9475e9e045c7a89b565fa3648';
+
+const publicClient = createPublicClient({
+  chain: base,
+  transport: http(process.env.RPC_URL!), // Alchemy / Infura RPC URL
+});
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('Authorization');
+
   if (!authHeader?.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -17,36 +24,35 @@ export async function GET(req: NextRequest) {
   const token = authHeader.split(' ')[1];
 
   try {
+    // ✅ Step 1: Verify JWT and get FID
     const payload = await quickAuthClient.verifyJwt({ token, domain: DOMAIN });
-    const fid = payload.sub;
+    const fid = Number(payload.sub);
 
-    // --- TEMPORARILY DISABLED HOLDER CHECK ---
-    // const neynarRes = await fetch(`https://api.neynar.com/v2/fid/${fid}`, {
-    //   headers: { 'api_key': NEYNAR_API_KEY },
-    // });
-    // const { connected_addresses } = await neynarRes.json();
-    // const addresses: string[] = connected_addresses.eth_addresses;
-    // const isHolder = await Promise.any(
-    //   addresses.map(async (address) => {
-    //     const alchemyRes = await fetch(ALCHEMY_URL, {
-    //       method: 'POST',
-    //       headers: { 'Content-Type': 'application/json' },
-    //       body: JSON.stringify({
-    //         jsonrpc: '2.0',
-    //         id: 1,
-    //         method: 'alchemy_getTokenBalances',
-    //         params: [address, [ORIGIN_CONTRACT]],
-    //       }),
-    //     });
-    //     const json = await alchemyRes.json();
-    //     const balance = json.result?.tokenBalances?.[0]?.tokenBalance;
-    //     return balance && BigInt(balance) > 0n;
-    //   })
-    // ).catch(() => false);
+    // ✅ Step 2: Lookup custody address via Neynar
+    const userRes = await fetch(`https://api.neynar.com/v2/fid/${fid}`, {
+      headers: { 'api_key': NEYNAR_API_KEY },
+    });
 
-    return NextResponse.json({ tier: 'originHolder', fid });
+    const userJson = await userRes.json();
+    const address = userJson?.result?.user?.custody_address as `0x${string}`;
+
+    if (!address) {
+      return NextResponse.json({ error: 'No custody address found' }, { status: 400 });
+    }
+
+    // ✅ Step 3: Check NFT ownership
+    const balance = await publicClient.readContract({
+      address: ORIGIN_CONTRACT,
+      abi: parseAbi(['function balanceOf(address) view returns (uint256)']),
+      functionName: 'balanceOf',
+      args: [address],
+    });
+
+    const ownsNFT = BigInt(balance) > 0n;
+
+    return NextResponse.json({ ownsNFT, address });
   } catch (err) {
-    console.error('🔴 Token check failed:', err);
+    console.error('🔴 Token or NFT check failed:', err);
     return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
   }
 }

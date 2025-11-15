@@ -10,32 +10,29 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    sdk.actions.ready(); // ✅ splash screen will hide only after app is mounted
+    sdk.actions.ready(); // Hide splash screen after mount
   }, []);
 
   const handleEntrar = async () => {
     setError('');
     setLoading(true);
-  
+
     try {
-      const { token: _token } = await sdk.quickAuth.getToken(); // ✅ renamed to avoid lint error
-  
-      // ✅ NFT ownership check — temporarily disabled
-      /*
-      const response = await sdk.quickAuth.fetch('/api/check-nft', {
+      const { token } = await sdk.quickAuth.getToken();
+
+      const response = await fetch('/api/check-nft', {
         headers: {
-          Authorization: `Bearer ${_token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-  
-      const { ownsNFT } = await response.json();
-  
-      if (!ownsNFT) {
-        setError("❌ Sorry you don’t own any OriginStory. Grab some ⚡️ and try again.");
+
+      const result = await response.json();
+
+      if (!result.ownsNFT) {
+        setError("❌ You don’t hold any OriginStory tokens. Grab some ⚡️ and come back.");
         return;
       }
-      */
-  
+
       router.push('/dashboard');
     } catch (err) {
       console.error(err);
@@ -44,7 +41,7 @@ export default function Home() {
       setLoading(false);
     }
   };
-  
+
   return (
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center space-y-6 p-6">
       <h1 className="text-4xl font-bold text-amber-400">⚡️ La Monjería</h1>

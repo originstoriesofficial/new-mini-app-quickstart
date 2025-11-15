@@ -1,13 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { parseEther } from 'viem';
 import { writeContract, getAccount } from '@wagmi/core';
 import { wagmiConfig } from '../lib/wagmi';
 import ComposeCastButton from '../components/ComposeCastButton';
 import { MONKERIA_ABI } from '../lib/abi/monkeria';
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image';
+
+const searchParams = useSearchParams();
+const fid = searchParams.get('fid');
 
 const MONKERIA_ADDRESS = '0x3D1E34Aa63d26f7b1307b96a612a40e5F8297AC7';
 
